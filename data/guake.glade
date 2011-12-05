@@ -215,6 +215,15 @@
       </widget>
     </child>
     <child>
+      <widget class="GtkImageMenuItem" id="context_terminal_reset">
+        <property name="label" translatable="yes">Terminal Reset</property>
+        <property name="visible">True</property>
+        <property name="use_underline">True</property>
+        <property name="use_stock">False</property>
+        <signal name="activate" handler="reset_terminal"/>
+      </widget>
+    </child>
+    <child>
       <widget class="GtkImageMenuItem" id="context_close_tab">
         <property name="label" translatable="yes">Close Tab</property>
         <property name="visible">True</property>

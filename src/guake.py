@@ -1025,6 +1025,13 @@ class Guake(SimpleGladeApp):
         """
         pagepos = self.notebook.get_current_page()
         self.delete_tab(pagepos)
+        
+    def reset_terminal(self, *args): 
+        """Performs reset on current vte, restoring as much as possible state to default 
+        """ 
+        pagepos = self.notebook.get_current_page() 
+        self.term_list[pagepos].reset(True, True) 
+        return True 
 
     def rename_current_tab(self, new_text):
         """Sets the `self.selected_tab' var with the selected radio
