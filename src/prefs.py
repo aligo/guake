@@ -66,6 +66,8 @@ HOTKEYS = [
                'label': _('New tab')},
               {'key': LKEY('close_tab'),
                'label': _('Close tab')},
+              {'key': LKEY('reset_terminal'),
+               'label': _('Reset terminal')},
               {'key': LKEY('rename_tab'),
                'label': _('Rename current tab')},
               ]},

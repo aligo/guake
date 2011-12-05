@@ -355,6 +355,18 @@
         </schema>
 
         <schema>
+            <key>/schemas/apps/guake/keybindings/local/reset_terminal</key>
+            <applyto>/apps/guake/keybindings/local/reset_terminal</applyto>
+            <owner>guake</owner>
+            <type>string</type>
+            <default>&lt;Control&gt;k</default>
+            <locale name="C">
+                <short>Reset terminal</short>
+                <long>Accelerator to active function that reset the current selected tab.</long>
+            </locale>
+        </schema>
+
+        <schema>
             <key>/schemas/apps/guake/keybindings/local/previous_tab</key>
             <applyto>/apps/guake/keybindings/local/previous_tab</applyto>
             <owner>guake</owner>

@@ -348,7 +348,7 @@ class GConfKeyHandler(object):
         notify_add = self.client.notify_add
         notify_add(GKEY('show_hide'), self.reload_globals)
 
-        keys = ['toggle_fullscreen', 'new_tab', 'close_tab', 'rename_tab',
+        keys = ['toggle_fullscreen', 'new_tab', 'close_tab', 'reset_terminal', 'rename_tab',
                 'previous_tab', 'next_tab', 'clipboard_copy', 'clipboard_paste',
                 'quit',
                 ]
@@ -399,6 +399,12 @@ class GConfKeyHandler(object):
             self.accel_group.connect_group(
                 key, mask, gtk.ACCEL_VISIBLE,
                 self.guake.close_tab)
+
+        key, mask = gtk.accelerator_parse(gets('reset_terminal'))
+        if key > 0:
+            self.accel_group.connect_group(
+                key, mask, gtk.ACCEL_VISIBLE,
+                self.guake.reset_terminal)
 
         key, mask = gtk.accelerator_parse(gets('previous_tab'))
         if key > 0:
