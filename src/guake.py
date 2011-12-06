@@ -2,6 +2,7 @@
 """
 Copyright (C) 2007,2008,2009,2010 Lincoln de Sousa <lincoln@minaslivre.org>
 Copyright (C) 2007 Gabriel Falcão <gabrielteratos@gmail.com>
+Copyright (C) 2011 aligo Kang <aligo_x@163.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License as
@@ -564,6 +565,8 @@ class Guake(SimpleGladeApp):
         # to get a widget by the current page in self.notebook
         self.term_list = []
 
+        self.vte_titlings = []
+
         # This is the pid of shells forked by each terminal. Will be
         # used to kill the process when closing a tab
         self.pid_list = []
@@ -845,7 +848,7 @@ class Guake(SimpleGladeApp):
             term_pid = self.pid_list[term_idx]
             fgpid = posix.tcgetpgrp(fdpty)
             if not (fgpid == -1 or fgpid == term_pid):
-            	total_procs += 1
+                total_procs += 1
             term_idx += 1
         return total_procs
 
@@ -981,13 +984,24 @@ class Guake(SimpleGladeApp):
         """
         self.delete_tab(self.notebook.page_num(widget), kill=False)
 
+    def on_terminal_title_changed(self, vte, box):
+        pagepos = self.notebook.page_num(box)
+        if self.vte_titlings[pagepos]:
+            self.tabs.get_children()[pagepos].set_label(vte.get_window_title())
+
     def on_rename_activate(self, *args):
         """Shows a dialog to rename the current tab.
         """
+        pagepos = self.notebook.get_current_page()
+
         entry = gtk.Entry()
         entry.set_text(self.selected_tab.get_label())
         entry.set_property('can-default', True)
         entry.show()
+
+        check = gtk.CheckButton("Use terminal title")
+        check.set_active(self.vte_titlings[pagepos])
+        check.show()
 
         vbox = gtk.VBox()
         vbox.set_border_width(6)
@@ -1005,7 +1019,9 @@ class Guake(SimpleGladeApp):
         dialog.set_has_separator(False)
         dialog.set_default_response(gtk.RESPONSE_ACCEPT)
         dialog.add_action_widget(entry, gtk.RESPONSE_ACCEPT)
+        dialog.action_area.pack_end(check)
         entry.reparent(vbox)
+        check.reparent(vbox)
 
         self.disable_losefocus_hiding = True
         response = dialog.run()
@@ -1013,6 +1029,7 @@ class Guake(SimpleGladeApp):
 
         if response == gtk.RESPONSE_ACCEPT:
             self.selected_tab.set_label(entry.get_text())
+            self.vte_titlings[pagepos] = check.get_active()
 
         dialog.destroy()
         self.set_terminal_focus()
@@ -1095,6 +1112,7 @@ class Guake(SimpleGladeApp):
         box.terminal.grab_focus()
         box.terminal.connect('button-press-event', self.show_context_menu)
         box.terminal.connect('child-exited', self.on_terminal_exited, box)
+        box.terminal.connect('window-title-changed', self.on_terminal_title_changed, box)
         box.show()
 
         self.term_list.append(box.terminal)
@@ -1110,6 +1128,8 @@ class Guake(SimpleGladeApp):
         final_params = self.get_fork_params(default_params)
         pid = box.terminal.fork_command(**final_params)
         self.pid_list.append(pid)
+
+        self.vte_titlings.append(False) 
 
         # Adding a new radio button to the tabbar
         label = _('Terminal %s') % self.tab_counter
@@ -1142,6 +1162,7 @@ class Guake(SimpleGladeApp):
         self.tabs.get_children()[pagepos].destroy()
         self.notebook.remove_page(pagepos)
         self.term_list.pop(pagepos).destroy()
+        self.vte_titlings.pop(pagepos)
         pid = self.pid_list.pop(pagepos)
 
         if kill:
