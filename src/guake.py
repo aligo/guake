@@ -984,10 +984,10 @@ class Guake(SimpleGladeApp):
         """
         self.delete_tab(self.notebook.page_num(widget), kill=False)
 
-    def on_terminal_title_changed(self, vte, box):
-        pagepos = self.notebook.page_num(box)
+    def on_terminal_title_changed(self, term, widget):
+        pagepos = self.notebook.page_num(widget)
         if self.vte_titlings[pagepos]:
-            self.tabs.get_children()[pagepos].set_label(vte.get_window_title())
+            self.tabs.get_children()[pagepos].set_label(term.get_window_title())
 
     def on_rename_activate(self, *args):
         """Shows a dialog to rename the current tab.
@@ -1030,6 +1030,7 @@ class Guake(SimpleGladeApp):
         if response == gtk.RESPONSE_ACCEPT:
             self.selected_tab.set_label(entry.get_text())
             self.vte_titlings[pagepos] = check.get_active()
+            self.on_terminal_title_changed(self.term_list[pagepos], self.notebook.get_nth_page(pagepos))
 
         dialog.destroy()
         self.set_terminal_focus()
